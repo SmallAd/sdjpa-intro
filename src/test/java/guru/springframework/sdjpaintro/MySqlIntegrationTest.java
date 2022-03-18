@@ -4,8 +4,10 @@ import guru.springframework.sdjpaintro.domain.AuthorUuid;
 import guru.springframework.sdjpaintro.domain.BookNatural;
 import guru.springframework.sdjpaintro.domain.BookUuid;
 import guru.springframework.sdjpaintro.domain.composite.AuthorComposite;
+import guru.springframework.sdjpaintro.domain.composite.AuthorEmbedded;
 import guru.springframework.sdjpaintro.domain.composite.NameId;
 import guru.springframework.sdjpaintro.repositories.AuthorCompositeRepository;
+import guru.springframework.sdjpaintro.repositories.AuthorEmbeddedRepository;
 import guru.springframework.sdjpaintro.repositories.AuthorUuidRepository;
 import guru.springframework.sdjpaintro.repositories.BookNaturalRepository;
 import guru.springframework.sdjpaintro.repositories.BookRepository;
@@ -43,6 +45,22 @@ public class MySqlIntegrationTest {
 
     @Autowired
     private AuthorCompositeRepository authorCompositeRepository;
+
+    @Autowired
+    private AuthorEmbeddedRepository authorEmbeddedRepository;
+
+    @Test
+    void testAuthorEmbedded() {
+        NameId nameId = new NameId("Vadim", "P");
+        AuthorEmbedded authorEmbedded = new AuthorEmbedded(nameId);
+        authorEmbedded.setCountry("RU");
+
+        AuthorEmbedded saved = authorEmbeddedRepository.save(authorEmbedded);
+        assertThat(saved).isNotNull();
+
+        AuthorEmbedded fetched = authorEmbeddedRepository.getById(nameId);
+        assertThat(fetched).isNotNull();
+    }
 
     @Test
     void testAuthorComposite() {
