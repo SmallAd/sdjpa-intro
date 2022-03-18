@@ -1,0 +1,78 @@
+package guru.springframework.sdjpaintro;
+
+import guru.springframework.sdjpaintro.domain.AuthorUuid;
+import guru.springframework.sdjpaintro.domain.BookNatural;
+import guru.springframework.sdjpaintro.domain.BookUuid;
+import guru.springframework.sdjpaintro.repositories.AuthorUuidRepository;
+import guru.springframework.sdjpaintro.repositories.BookNaturalRepository;
+import guru.springframework.sdjpaintro.repositories.BookRepository;
+import guru.springframework.sdjpaintro.repositories.BookUuidRepository;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.test.context.ActiveProfiles;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+/**
+ * Created by vpiontkovs on 3/15/2022.
+ */
+@ActiveProfiles("local")
+@DataJpaTest
+@ComponentScan(basePackages = "guru.springframework.sdjpaintro.bootstrap")
+@AutoConfigureTestDatabase(replace = Replace.NONE)
+public class MySqlIntegrationTest {
+    
+    @Autowired
+    private BookRepository bookRepository;
+
+    @Autowired
+    private BookUuidRepository bookUuidRepository;
+
+    @Autowired
+    private AuthorUuidRepository authorUuidRepository;
+
+    @Autowired
+    private BookNaturalRepository bookNaturalRepository;
+
+    @Test
+    void testBookNatural() {
+        BookNatural bookNatural = new BookNatural();
+        bookNatural.setTitle("My Book");
+
+        BookNatural saved = bookNaturalRepository.save(bookNatural);
+
+        BookNatural fetched = bookNaturalRepository.getById(saved.getTitle());
+
+        assertThat(fetched).isNotNull();
+    }
+
+    @Test
+    void testBookUuid() {
+        BookUuid saved = bookUuidRepository.save(new BookUuid());
+        assertThat(saved).isNotNull();
+        assertThat(saved.getId()).isNotNull();
+
+        BookUuid fetched = bookUuidRepository.getById(saved.getId());
+        assertThat(fetched).isNotNull();
+    }
+
+    @Test
+    void testAuthorUuid() {
+        AuthorUuid saved = authorUuidRepository.save(new AuthorUuid());
+        assertThat(saved).isNotNull();
+        assertThat(saved.getId()).isNotNull();
+
+        AuthorUuid fetched = authorUuidRepository.getById(saved.getId());
+        assertThat(fetched).isNotNull();
+    }
+
+    @Test
+    void testMySql() {
+        long count = bookRepository.count();
+        assertThat(count).isEqualTo(2);
+    }
+}
